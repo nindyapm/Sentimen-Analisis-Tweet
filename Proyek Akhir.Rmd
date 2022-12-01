@@ -35,7 +35,7 @@ library(tidyverse)
 ```{r}
 #CLEANING DATA
 
-tw <- readRDS('tweetSriAsih.rds')
+tw <- readRDS('tweetSriAsih.rds') 
 DataKotor = twListToDF(tw) #convert twitteR list to data
 
 #menampilkan semua tweet yang kita mining
@@ -89,7 +89,7 @@ twitclean <- tm_map(twitclean, tolower) #mengubah huruf kecil
 myStopwords <- readLines("stopword.txt", warn = FALSE)
 twitclean <- tm_map(twitclean,removeWords,myStopwords)
 twitclean <- tm_map(twitclean , removeWords, 
-                    c('kalo','akun','ada','sini','langsung','','gak','org','saya','nonton', 'udah','cok','babi','tinggal','njir','itu','tiktok','anjrit','aja','kan','dah','kayak','dari','gue','kemarin','bahan','kyk','tinggal','yg','game','tae','nya','gk','kakaa','anj','sudah','skak','dahal','jadi','kkalau','sebab','mesti','bgt','nak','gw','yg','sama','bisa','date', ' taiikk','ngen'))
+                    c('kalo','akun','ada','sini','langsung','','gak','org','saya','nonton', 'udah','cok','babi','tinggal','njir','itu','tiktok','anjrit','aja','kan','dah','kayak','dari','gue','kemarin','bahan','kyk','tinggal','yg','game','tae','nya','gk','kakaa','anj','sudah','skak','dahal','jadi','kkalau','sebab','mesti','bgt','nak','gw','yg','sama','bisa','date', ' taiikk','ngen', 'sri', 'asih','film'))
 
 
 #HAPUS DATA KOSONG
@@ -198,7 +198,7 @@ server <- function(input, output) {
   barplot(colSums(s),col=rainbow(10),ylab='count',main='Sentimen Analisis')
   }, height=400)
   
-  #Implementasi Algoritma Naive Bayes dan Wordcloud
+ #Implementasi Algoritma Naive Bayes dan Wordcloud
   output$Wordcloud <- renderPlot({
     set.seed(20)
     df<-df[sample(nrow(df)),]
@@ -215,7 +215,7 @@ server <- function(input, output) {
       tm_map(removeNumbers)%>%
       tm_map(removeWords,stopwords(kind="en"))%>%
       tm_map(stripWhitespace)
-    dtm<-DocumentTermMatrix(corpus.clean)
+    dtm<-DocumentTermMatrix(corpus.clean) # mengubah kata menjadi angka agar kita tahu jumlah kata yang sering digunakan dan memudahkan  kita untuk analisis
     inspect(dtm[1:10,1:20])
     df.train<-df[1:100,]
     df.test<-df[101:200,]
@@ -224,8 +224,8 @@ server <- function(input, output) {
     corpus.clean.train<-corpus.clean[1:100]
     corpus.clean.test<-corpus.clean[101:200]
     
-   dim(dtm.train)
-    fivefreq<-findFreqTerms(dtm.train,5)
+   dim(dtm.train) #mengetahui jumlah baris dan kolom matriks
+    fivefreq<-findFreqTerms(dtm.train,5) #frekuensi 5 kali kemunculan
     length(fivefreq)
     dtm.train.nb<-DocumentTermMatrix(corpus.clean.train,control = list(dictionary=fivefreq))
     dtm.test.nb<-DocumentTermMatrix(corpus.clean.test,control = list(dictionary=fivefreq))
@@ -237,7 +237,6 @@ server <- function(input, output) {
     }
     trainNB<-apply(dtm.train.nb,2,convert_count)
     testNB<-apply(dtm.test.nb,1,convert_count)
-    classifier<-naiveBayes(trainNB,df.train$X,laplace = 1)
     wordcloud(corpus.clean,min.freq = 4,max.words=100,random.order=F,colors=brewer.pal(8,"Dark2"))
   })
   
